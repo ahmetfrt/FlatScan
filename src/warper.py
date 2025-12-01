@@ -14,7 +14,6 @@ class Warper:
         rect[2] = pts[np.argmax(s)] # Bottom-Right
 
         # 3. The Top-Right point will have the smallest difference (x - y)
-        #    (or y - x depending on implementation, but diff works)
         # 4. The Bottom-Left point will have the largest difference
         diff = np.diff(pts, axis=1)
         rect[1] = pts[np.argmin(diff)] # Top-Right

@@ -8,14 +8,12 @@ class Evaluator:
             data = json.load(f)
         
         # Check if the 'shapes' list exists and is not empty
-        # 'shapes' is a LIST of dictionaries: [ {label:..., points:...}, {...} ]
         if not data.get('shapes'):
             print(f"Warning: No valid shapes found in {json_path}")
-            # FIX: Added [] inside np.array to fix SyntaxError
             return np.array([], dtype="float32")
             
         try:
-            # FIX: Access the FIRST element [0] of the list before asking for 'points'
+            # [0] element is the "label"
             points = data['shapes'][0]['points']
         except (IndexError, KeyError) as e:
             print(f"Warning: Could not extract points from {json_path}: {e}")
@@ -32,13 +30,13 @@ class Evaluator:
             poly_gt = Polygon(gt_points)
             poly_pred = Polygon(pred_points)
 
-            # Fix invalid geometries (e.g., self-intersecting lines)
+            # Fix invalid geometries
             if not poly_gt.is_valid:
                 poly_gt = poly_gt.buffer(0)
             if not poly_pred.is_valid:
                 poly_pred = poly_pred.buffer(0)
 
-            # Calculate IoU
+            # IoU calculation
             intersection = poly_gt.intersection(poly_pred).area
             union = poly_gt.union(poly_pred).area
 

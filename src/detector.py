@@ -9,16 +9,15 @@ class Detector:
     
     def get_document_contour(self, cnts):
         for c in cnts:
-            # Filter out small noise
+            # to not see small noises
             if cv.contourArea(c) < 2000:
                 continue
             
-            # FIX: Convex Hull makes the shape "solid" (like wrapping a rubber band around it)
-            # This fixes issues where the edge is slightly jagged.
+            # makes the shape more solid
             c = cv.convexHull(c)
 
             peri = cv.arcLength(c, True)
-            # 0.04 allows for slightly imperfect rectangles
+            # was 0.02 previously but 0.04 is better for slightly imperfect rectangles
             approx = cv.approxPolyDP(c, 0.04 * peri, True)
 
             if len(approx) == 4:
