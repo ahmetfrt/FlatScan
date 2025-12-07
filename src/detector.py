@@ -3,14 +3,14 @@ import numpy as np
 
 class Detector:
     def findContours(self, edge_image):
-        cnts, _ = cv.findContours(edge_image.copy(), cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+        cnts, _ = cv.findContours(edge_image.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         cnts = sorted(cnts, key=cv.contourArea, reverse=True)[:5]
         return cnts
     
     def get_document_contour(self, cnts):
         for c in cnts:
             # to not see small noises
-            if cv.contourArea(c) < 2000:
+            if cv.contourArea(c) < 20000:
                 continue
             
             # makes the shape more solid

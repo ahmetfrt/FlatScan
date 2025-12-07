@@ -1,20 +1,15 @@
 import cv2 as cv
 import numpy as np
 
-# Could not understand clearly
 class Warper:
     def order_points(self, pts):
         rect = np.zeros((4, 2), dtype="float32")
 
-
-        # 1. The Top-Left point will have the smallest sum (x + y)
-        # 2. The Bottom-Right point will have the largest sum (x + y)
         s = pts.sum(axis=1)
         rect[0] = pts[np.argmin(s)] # Top-Left
         rect[2] = pts[np.argmax(s)] # Bottom-Right
 
-        # 3. The Top-Right point will have the smallest difference (x - y)
-        # 4. The Bottom-Left point will have the largest difference
+
         diff = np.diff(pts, axis=1)
         rect[1] = pts[np.argmin(diff)] # Top-Right
         rect[3] = pts[np.argmax(diff)] # Bottom-Left

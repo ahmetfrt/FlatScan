@@ -1,46 +1,54 @@
 import cv2 as cv
-import numpy as np
 
 class Preprocessor:
-    def __init__(self):
-        pass
-
-    def resize(self, image, width = 500):
-        # Resizing image to a standard width(important for speed)
-
-        # Shape of image in terms of pixels
+    def resize(self, image, width=500):
         (h, w) = image.shape[:2]
-
-        # Calculating ratio to apply final crop to the original image
         r = width / float(w)
-
         dim = (width, int(h * r))
         resized = cv.resize(image, dim, interpolation=cv.INTER_AREA)
         return resized, r
 
-    def apply_blur(self, image, method = "Gaussian"):
-        # Method parameter will be used for ablation study
-
+    # Logic: Canny + Light Blur + Light Dilation
+    # Goal: Get the perfect outline without bloating.
+    def pipeline_precision(self, image):
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        blurred = cv.GaussianBlur(gray, (5, 5), 0)
+        edges = cv.Canny(blurred, 30, 100)
 
-        # Default is gaussian but both will be tested for comparison
-        if method == "Gaussian":
-            return cv.GaussianBlur(gray, (7,7), 0)
-        elif method == "Bilateral":
-            return cv.bilateralFilter(gray, 9, 75, 75)
-        
-        return gray
-    
-    def detect_edges(self, image):
-        # (30, 100) works much better for soft document edges than dynamic ones.
-        lower, upper = 30, 100
 
-        edges = cv.Canny(image, lower, upper)
-
-        # stronger dilation
-        # used iterations=2 to bridge larger gaps in the paper edge
-        kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
-        edges = cv.dilate(edges, kernel, iterations=2)
+        kernel = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
+        edges = cv.dilate(edges, kernel, iterations=1)
         edges = cv.morphologyEx(edges, cv.MORPH_CLOSE, kernel)
+        return edges
 
+
+    # Logic: Adaptive Thresh + Median Blur
+    # Goal: See edges that Canny missed.
+    def pipeline_sensitivity(self, image):
+        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        blurred = cv.GaussianBlur(gray, (9,9), 0) 
+        
+        thresh = cv.adaptiveThreshold(blurred, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                      cv.THRESH_BINARY, 91, 2)
+        thresh = cv.bitwise_not(thresh)
+        
+        kernel = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
+        edges = cv.dilate(thresh, kernel, iterations=1)
+        edges = cv.morphologyEx(edges, cv.MORPH_CLOSE, kernel)
+        return edges
+    
+    # Logic: Adaptive + Heavy Dilation
+    # Goal: Glue broken lines together no matter what.
+    def pipeline_brute_force(self, image):
+        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        blurred = cv.medianBlur(gray, 11)
+        
+        thresh = cv.adaptiveThreshold(blurred, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                      cv.THRESH_BINARY, 21, 2)
+        thresh = cv.bitwise_not(thresh)
+        
+
+        kernel = cv.getStructuringElement(cv.MORPH_RECT, (7, 7))
+        edges = cv.dilate(thresh, kernel, iterations=3)
+        edges = cv.morphologyEx(edges, cv.MORPH_CLOSE, kernel)
         return edges
