@@ -10,7 +10,7 @@ class Detector:
     def get_document_contour(self, cnts):
         for c in cnts:
             # to not see small noises
-            if cv.contourArea(c) < 20000:
+            if cv.contourArea(c) < 40000:
                 continue
             
             # makes the shape more solid

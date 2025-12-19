@@ -26,14 +26,14 @@ class Preprocessor:
     # Goal: See edges that Canny missed.
     def pipeline_sensitivity(self, image):
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-        blurred = cv.GaussianBlur(gray, (9,9), 0) 
+        blurred = cv.GaussianBlur(gray, (7,7), 0) 
         
         thresh = cv.adaptiveThreshold(blurred, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                                      cv.THRESH_BINARY, 91, 2)
+                                      cv.THRESH_BINARY, 31, 4)
         thresh = cv.bitwise_not(thresh)
         
         kernel = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
-        edges = cv.dilate(thresh, kernel, iterations=1)
+        edges = cv.dilate(thresh, kernel, iterations=2)
         edges = cv.morphologyEx(edges, cv.MORPH_CLOSE, kernel)
         return edges
     

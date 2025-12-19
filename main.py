@@ -18,7 +18,7 @@ postproc = PostProcessor()
 image_paths = glob.glob("dataset/*.jpg")
 
 # Defined to not detect too small objects as documents
-SAFE_AREA = 120000 
+SAFE_AREA = 120000
 
 all_ious = []
 method_counts = {"Precision" : 0, "Sensitivity" : 0, "BruteForce" : 0}
@@ -47,7 +47,7 @@ for img_path in image_paths:
         max_area = cv.contourArea(cnt)
 
 
-    if cnt is None or max_area < 40000:
+    if cnt is None:
     # second pipeline -> sensitivity
         if max_area < 80000:
             edges = prep.pipeline_sensitivity(resized_image)
@@ -80,6 +80,7 @@ for img_path in image_paths:
     
     debug_vis = resized_image.copy()
     if doc_cnt is not None:
+        cv.drawContours(debug_vis, cnts, -1, (0, 0, 255), 1)
         cv.drawContours(debug_vis, [doc_cnt], -1, (0, 255, 0), 3)
         
         # points resized to original
@@ -99,6 +100,7 @@ for img_path in image_paths:
         if os.path.exists(json_path):
             gt_points = evaluator.load_ground_truth(json_path)
             iou = evaluator.calculate_iou(gt_points, doc_cnt_original)
+
             print(f"Image: {filename} | Used: {best_method:17} | IoU: {iou:.4f}")
             # COLLECT DATA HERE
             all_ious.append(iou)
@@ -117,6 +119,15 @@ for img_path in image_paths:
     # save the version where the contours drawn
     cv.imwrite(os.path.join("visual", f"debug_{filename}"), debug_vis)
 
+sum_iou = 0
+n = 0
+for i in all_ious:
+    sum_iou += i
+    n += 1
+
+result = float(sum_iou / n)
+
+print(f"Average of IoU: {result:.4f}")
 
 
 # 2. GENERATE IoU HISTOGRAM
