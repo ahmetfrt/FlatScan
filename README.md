@@ -4,9 +4,9 @@
 
 ## 🖼️ Gallery
 
-| Input Image | Detected Contour | Scanned Output |
+| Input Image | Output(Scanned) Image | IoU Chart |
 | :---: | :---: | :---: |
-| <img src="assets/example_input.jpg" width="200"> | <img src="assets/example_output.jpg" width="200"> | <img src="scanned/iou_chart.png" width="200"> |
+| <img src="assets/example_input.jpg" width="200"> | <img src="assets/example_output.jpg" width="200"> | <img src="assets/iou_chart.png" width="200"> |
 
 
 ## 🚀 Key Features
