@@ -39,7 +39,7 @@ The system does not rely on a single algorithm. It makes decisions dynamically:
 
 The algorithm was tested on a dataset including "stress test" images (crumpled receipts, texture traps, shadows).
 
-* **Average IoU:** 0.8721
+* **Average IoU:** 0.8495
 * **Success Rate:** 100% (All images > 0.60 IoU)
 
 ![Method Usage Chart](graphs/method_usage_chart.png)
