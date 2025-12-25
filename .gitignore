@@ -1,0 +1,8 @@
+sr__pycache__/
+output/
+.flatscan/
+dataset/*.json
+scanned/
+visual/
+Resources.docx
+LabelMe.exe
