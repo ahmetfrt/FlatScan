@@ -43,6 +43,7 @@ The algorithm was tested on a dataset including "stress test" images (crumpled r
 * **Success Rate:** 100% (All images > 0.60 IoU)
 
 ![Method Usage Chart](graphs/method_usage_chart.png)
+
 *Figure: Frequency of pipeline stages. While 'Precision' handles most cases, the fallback stages are critical for robustness.*
 
 ## 📂 Project Structure
