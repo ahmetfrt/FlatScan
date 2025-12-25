@@ -1,23 +1,20 @@
 # FlatScan: Automation of Document Scanning with Perspective Correction
 
-![Language](https://img.shields.io/badge/language-Python-blue.svg) ![Library](https://img.shields.io/badge/library-OpenCV-green.svg) ![Status](https://img.shields.io/badge/status-Completed-success.svg)
-
 **FlatScan** is a computer vision application that automatically detects documents in images, corrects perspective distortion, and generates a clean "scanned" output. It is designed to handle challenging real-world conditions like shadows, complex backgrounds, and varying angles.
 
 ## 🖼️ Gallery
 
 | Input Image | Detected Contour | Scanned Output |
 | :---: | :---: | :---: |
-| <img src="assets/demo_input.jpg" width="200"> | <img src="visual/demo_debug.jpg" width="200"> | <img src="scanned/demo_output.jpg" width="200"> |
+| <img src="assets/example_input.jpg" width="200"> | <img src="assets/example_output.jpg" width="200"> | <img src="scanned/iou_chart.png" width="200"> |
 
-*(Note: Replace the image paths above with actual filenames from your visual/scanned folders)*
 
 ## 🚀 Key Features
 
 * **Cascading 3-Stage Pipeline:** Uses a smart fallback mechanism (Precision → Sensitivity → Brute Force) to ensure documents are detected even when lighting is poor or edges are broken.
 * **Shadow Removal:** A custom post-processing algorithm divides out background shadows to create a clean, white paper look.
 * **Intelligent Area Filtering:** Uses an "Incumbent Rule" to distinguish between the actual document and shadows or internal diagrams.
-* **Performance:** Achieved an average IoU of **0.87** on a stress-test dataset of 40+ images.
+* **Performance:** Achieved an average IoU of **0.85** on a stress-test dataset of 40+ images.
 
 ## ⚙️ How It Works (The Algorithm)
 
