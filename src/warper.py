@@ -30,15 +30,6 @@ class Warper:
         height_B = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
         maxHeight = max(int(height_A), int(height_B))
 
-
-        """dst = np.zeros((4,2), dtype="float32")
-        dst[0] = [0,0]
-        dst[1] = [0, maxHeight-1]
-        dst[2] = [maxWidth-1, maxHeight-1]
-        dst[3] = [maxWidth-1, 0]
-
-        dst = dst.astype("float32")"""
-
         dst = np.array([
             [0, 0],                       # Top-Left
             [maxWidth - 1, 0],            # Top-Right

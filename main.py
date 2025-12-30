@@ -17,8 +17,6 @@ postproc = PostProcessor()
 
 image_paths = glob.glob("dataset/*.jpg")
 
-# Defined to not detect too small objects as documents
-SAFE_AREA = 120000
 
 all_ious = []
 method_counts = {"Precision" : 0, "Sensitivity" : 0, "BruteForce" : 0}
@@ -47,23 +45,23 @@ for img_path in image_paths:
         max_area = cv.contourArea(cnt)
 
 
-    if cnt is None:
+    if cnt is None or max_area < 40000:
     # second pipeline -> sensitivity
-        if max_area < 80000:
-            edges = prep.pipeline_sensitivity(resized_image)
-            cnts = detector.findContours(edges)
-            cnt = detector.get_document_contour(cnts)
-            
-            if cnt is not None:
-                area = cv.contourArea(cnt)
-                # incumbent rule -> only switch if the new area is > 30% larger than the old one
-                if area > max_area * 1.3:
-                    best_cnt = cnt
-                    best_method = "Sensitivity"
-                    max_area = area
-
+        
+        edges = prep.pipeline_sensitivity(resized_image)
+        cnts = detector.findContours(edges)
+        cnt = detector.get_document_contour(cnts)
+        
+        if cnt is not None:
+            area = cv.contourArea(cnt)
+            # incumbent rule -> only switch if the new area is > 30% larger than the old one
+            if area > max_area * 1.3:
+                best_cnt = cnt
+                best_method = "Sensitivity"
+                max_area = area
+        
         # third pipeline -> brute force
-        if max_area < 120000:
+        if cnt is None or max_area < 80000:
             edges = prep.pipeline_brute_force(resized_image)
             cnts = detector.findContours(edges)
             cnt = detector.get_document_contour(cnts)
@@ -78,10 +76,10 @@ for img_path in image_paths:
     # final processing
     doc_cnt = best_cnt
     
-    debug_vis = resized_image.copy()
+    #debug_vis = resized_image.copy()
     if doc_cnt is not None:
-        cv.drawContours(debug_vis, cnts, -1, (0, 0, 255), 1)
-        cv.drawContours(debug_vis, [doc_cnt], -1, (0, 255, 0), 3)
+        #cv.drawContours(debug_vis, cnts, -1, (0, 0, 255), 1)
+        #cv.drawContours(debug_vis, [doc_cnt], -1, (0, 255, 0), 3)
         
         # points resized to original
         doc_cnt_original = doc_cnt.reshape(4, 2) * (1 / ratio)
@@ -90,7 +88,7 @@ for img_path in image_paths:
         warped = warper.four_point_transform(image, doc_cnt_original)
 
         # to give scanned pdf look
-        scanned = postproc.process(warped, mode="grayscale")
+        scanned = postproc.process(warped)
 
         # save the scanned version
         cv.imwrite(os.path.join("scanned", f"scanned_{filename}"), scanned)
@@ -112,12 +110,12 @@ for img_path in image_paths:
             print(f"Image: {filename} | Used: {best_method:17} | Detected")
         
         # save the warped version
-        cv.imwrite(os.path.join("output", f"warped_{filename}"), warped)
+        #cv.imwrite(os.path.join("output", f"warped_{filename}"), warped)
     else:
         print(f"Failed to detect document in {filename}")
 
     # save the version where the contours drawn
-    cv.imwrite(os.path.join("visual", f"debug_{filename}"), debug_vis)
+    #cv.imwrite(os.path.join("visual", f"debug_{filename}"), debug_vis)
 
 sum_iou = 0
 n = 0
