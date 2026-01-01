@@ -76,10 +76,10 @@ for img_path in image_paths:
     # final processing
     doc_cnt = best_cnt
     
-    #debug_vis = resized_image.copy()
+    debug_vis = resized_image.copy()
     if doc_cnt is not None:
-        #cv.drawContours(debug_vis, cnts, -1, (0, 0, 255), 1)
-        #cv.drawContours(debug_vis, [doc_cnt], -1, (0, 255, 0), 3)
+        cv.drawContours(debug_vis, cnts, -1, (0, 0, 255), 1)
+        cv.drawContours(debug_vis, [doc_cnt], -1, (0, 255, 0), 3)
         
         # points resized to original
         doc_cnt_original = doc_cnt.reshape(4, 2) * (1 / ratio)
@@ -110,12 +110,12 @@ for img_path in image_paths:
             print(f"Image: {filename} | Used: {best_method:17} | Detected")
         
         # save the warped version
-        #cv.imwrite(os.path.join("output", f"warped_{filename}"), warped)
+        cv.imwrite(os.path.join("output", f"warped_{filename}"), warped)
     else:
         print(f"Failed to detect document in {filename}")
 
     # save the version where the contours drawn
-    #cv.imwrite(os.path.join("visual", f"debug_{filename}"), debug_vis)
+    cv.imwrite(os.path.join("visual", f"debug_{filename}"), debug_vis)
 
 sum_iou = 0
 n = 0
